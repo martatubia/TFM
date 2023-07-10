@@ -6,7 +6,7 @@ En este repositorio se encuentran los trabajos realizados en el Trabajo de Fin d
 - variable_elimination_int
 - junction_tree_int
 
-Función auxiliar: my_draw, markdown, pdf_Variable_elimination, txt2pdf
+Funciones auxiliares: my_draw, markdown, pdf_Variable_elimination, txt2pdf
 Ejemplos de informes: informe_VE, informe_JT
 
 Funciones auxiliares: my_draw
