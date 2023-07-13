@@ -321,32 +321,7 @@ class myEGNA_evidence(EDA):
                 
             return eda_result, interp
       
-    # def costfunction(self, sol):
-    #     id=list(int(e) for e in self.evidences_soft.keys())
-       
-    #     mu=[self.pm.get_mu(self.pm.variables)]        
-    #     if np.linalg.norm(sol[id]-list(self.evidences_soft.values()))<2:
-          
-    #         a=self.pm.logl(pd.DataFrame([sol]))[0]
-    #         b=self.pm.logl(pd.DataFrame(mu))[0]
-            
-          
-    #         c=b-a
-    #     else:
-    #         c=9999
-    #     return c
-    # def costfunction2(self, sol):
-    #     id=list(int(e) for e in self.evidences_soft.keys())
-    #     id2=[i for i in range(10) if i not in id]
-        
-        
-    #     mu_inf, cov_inf=self.pm.inference(list(self.evidences_soft.values()), list(self.evidences_soft.keys()))       
-    #     if np.linalg.norm(sol[id]-list(self.evidences_soft.values()))<2:
-          
-    #         c=np.linalg.norm(sol[id2]-mu_inf)
-    #     else:
-    #         c=9999
-    #     return c
+
     
     def costfunction3(self, sol):
        
@@ -365,26 +340,8 @@ class myEGNA_evidence(EDA):
             c=9999
         return c
     
-    # def costfunction4(self, sol):
-    #     #id=list(int(e) for e in self.evidences_soft.keys())
-    #     id=list()
-    #     for v in self.evidences_soft.keys():
-    #         id.append(list(self.dict.keys())[list(self.dict.values()).index(v)])
-    #     mu=[self.pm.get_mu(self.pm.variables)]
-    #     resta=abs(sol[id]-list(self.evidences_soft.values()))
-    #     my_boolean_list=[resta[i]<self.ev_change[i] for i in range(len(self.ev_change))]
-    #     resultado=all(my_boolean_list)
-    #     if resultado:
-    #         d=np.linalg.norm(sol-mu)
-            
-    #         a=self.pm.logl(pd.DataFrame([sol]))[0]
-    #         b=self.pm.logl(pd.DataFrame([self.original_mu]))[0]
-    #         c=d+math.log(1.5)+b-a
-    #     else:
-    #         c=9999
-    #     return c
        
-    
+    #Función para calcular la distancia de Hamming entre DAGs
     def SHD(self,edges1,edges2):
         dist=0
         edges2_rev = [t[::-1] for t in edges2]
