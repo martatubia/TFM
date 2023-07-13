@@ -24,6 +24,14 @@ Ejemplos de informes: informe_VE, informe_JT
   - preprocessing_alarm: preprocesado del dataset ALARM para realizar la representación de las k-MRE. Hay que tener en cuenta que los valores de las variables pueden aparecer desordenados en los ejes. En nuestro caso eran variables ordinales en su mayoría y quisimos que apareciesen en orden los valores, por mantener la semántica. Para ello se customizó una función column_values_dict, que devuelve para cada variable sus posibles valores ordenados. Como norma general se deberá customizar para cada dataset.
  
 Mirar Apéndice C de 'TFM_Marta_Alonso_Tubía'.
+
+# datasets
+Los dataset han sido obtenidos de repositorios abiertos. La fuente específica se cita en 'TFM_Marta_Alonso_Tubía'.
+
+ASIA_DATA: dataset con datos sintéticos generados por la res bayesiana ASIA.
+COVID_19_real_continuous: dataset sobre COVID-19
+measures_v2: dataset sobre la temperatura del motor
+
   
 
 
