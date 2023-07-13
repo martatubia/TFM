@@ -1,7 +1,7 @@
 # Soy Marta Alonso Tubía
 En este repositorio se encuentran los trabajos realizados en el Trabajo de Fin de Máster del MSc in Data Science.
 
-# Probabilidad condicionada a una inferencia:
+# Probabilidad condicionada a una evidencia:
 
 - variable_elimination_int: Apéndice A.1 de 'TFM_Marta_Alonso_Tubía'
 - junction_tree_int: Apéndice A.2 de 'TFM_Marta_Alonso_Tubía'
