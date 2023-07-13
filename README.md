@@ -7,9 +7,12 @@ En este repositorio se encuentran los trabajos realizados en el Trabajo de Fin d
 - junction_tree_int: Apéndice A.2 de 'TFM_Marta_Alonso_Tubía'
 - approximate_inference_int: Apéndice A.3 de 'TFM_Marta_Alonso_Tubía'
 
-Funciones auxiliares para generar los informes pdf a modo de resumen del 'reasoning process' en el caso de Variable elimination y junction tree clustering algorithm: my_draw, markdown, pdf_Variable_elimination, txt2pdf. 
+Funcion auxiliar para generar los informes pdf a modo de resumen del 'reasoning process' : txt2pdf. 
+Función auxiliar para dibujar labels en los arcos: my_draw
 
 Si no se desea generar ningun informe, simplemente comentar 'generarPDF' al final del archivo.
+
+Para cambiar de dataset, simplemente cambiar la ruta del csv.
 
 Ejemplos de informes: informe_VE, informe_JT
 
