@@ -1,5 +1,3 @@
-
-
 import os
 import rpy2.robjects as robjects
 from rpy2.robjects.packages import importr
@@ -15,54 +13,6 @@ from pgmpy.factors.discrete import TabularCPD
 from pgmpy.models import BayesianNetwork
 from pgmpy.sampling import GibbsSampling
 from pgmpy.factors.discrete import DiscreteFactor
-
-
-alarm_model = BayesianNetwork([("Burglary", "Alarm"),("Earthquake", "Alarm"),("Alarm", "JohnCalls"),("Alarm", "MaryCalls"),])
-
-
-cpd_burglary = TabularCPD(
-    variable="Burglary", variable_card=2, values=[[0.999], [0.001]])
-
-
-cpd_earthquake = TabularCPD(
-    variable="Earthquake", variable_card=2, values=[[0.998], [0.002]]
-)
-
-
-cpd_alarm = TabularCPD(
-    variable="Alarm",
-    variable_card=2,
-    values=[[0.999, 0.71, 0.06, 0.05], [0.001, 0.29, 0.94, 0.95]],
-    evidence=["Burglary", "Earthquake"],
-    evidence_card=[2, 2],)
-
-
-cpd_johncalls = TabularCPD(
-    variable="JohnCalls",
-    variable_card=2,
-    values=[[0.95, 0.1], [0.05, 0.9]],
-    evidence=["Alarm"],
-    evidence_card=[2],)
-
-
-cpd_marycalls = TabularCPD(
-    variable="MaryCalls",
-    variable_card=2,
-    values=[[0.1, 0.7], [0.9, 0.3]],
-    evidence=["Alarm"],
-    evidence_card=[2],)
-
-print(cpd_marycalls)
-
-# Associating the parameters with the model structure
-alarm_model.add_cpds(
-    cpd_burglary, cpd_earthquake, cpd_alarm, cpd_johncalls, cpd_marycalls
-)
-# Associating the parameters with the model structure
-alarm_model.add_cpds(cpd_burglary, cpd_earthquake, cpd_alarm, cpd_johncalls, cpd_marycalls)
-gibbs_alarm=GibbsSampling(alarm_model)
-cpds={"MaryCalls": cpd_marycalls, "JohnCalls": cpd_johncalls, "Alarm": cpd_alarm, "Earthquake": cpd_earthquake, "Burglary": cpd_burglary}
-
 from pgmpy.inference import ApproxInference
 class GibbsSampling_int(GibbsSampling):
     def __init__(self, model):
@@ -176,32 +126,7 @@ class ApproxInference_GibbsChoice(ApproxInference):
         print('En el método query puede elegir el qué tipo de sampling hacer en función de si hay evidencia (type_ev= likelihood or rejection) o de si no hay evidencia (type_non_ev = Gibbs or Forward)\n')
 
        
-    def query_GibbsChoice(self,variables,n_samples=10000,evidence=None, type_ev='likelihood', type_non_ev='Gibbs', diag='gelman', virtual_evidence=None,joint=True,show_progress=True):
-        # cpds2=self.model.get_cpds()
-        # dict_cpds=dict()
-        # for j in cpds2:
-        #     dict_cpds[j.variable]=j
-
-        # import itertools
-        # roots=self.model.get_roots()
-
-        # for i in roots:
-            
-        #     for j in list(dict_cpds[i].values):
-        #         if j<0.002:
-        #             print('Variable ' + str(i)+ ' has extreme low probability value: ', str(j))
-        #             children=self.model.get_children(node=i)
-                    
-        #             for c in children:
-        #                 values_children = list(itertools.chain(*list(itertools.chain(*dict_cpds[c].values))))
-        #                 buscando_discrepancias = [value>0.8 for value in values_children]
-        #                 if any(buscando_discrepancias):
-        #                     print('Además, presenta discrepancia entre prior y posterior con su variable hija '+ c + '(posterior > 0.8)\n')
-        #                     print(dict_cpds[i])
-        #                     print(dict_cpds[c])
-
-
-
+    def query_GibbsChoice(self,variables,n_samples=15000,evidence=None, type_ev='likelihood', type_non_ev='Gibbs', diag='gelman', virtual_evidence=None,joint=True,show_progress=True):
         type_ev_list=['rejection', 'likelihood']
         type_non_ev_list=['Gibbs', 'Forward']
         diag_list=['gelman', 'geweke', 'heidel']
@@ -224,7 +149,7 @@ class ApproxInference_GibbsChoice(ApproxInference):
                 # Step 1: Generate samples for the query
                 aa=GibbsSampling_int(self.model)
                 print(n_samples)
-                samples=aa.sample_convergencia(size=n_samples, diag=diag)
+                samples=aa.sample_convergencia(size=n_samples, diag=diag, multivariate=True)
                 print(samples)
                 # Step 2: Compute the distributions and return it.
                 b=self.get_distribution(samples=samples, variables=variables, joint=joint)
@@ -249,11 +174,20 @@ class ApproxInference_GibbsChoice(ApproxInference):
 
             
 
+from pgmpy.estimators import BayesianEstimator
+from pgmpy.estimators import HillClimbSearch
+from pgmpy.estimators import K2Score
+import networkx as nx
 
-inference4=ApproxInference_GibbsChoice(alarm_model)
-variables=['MaryCalls', 'Alarm']
-evidence={'Earthquake':1}
-print(inference4.query_GibbsChoice(variables=variables))
+df = pd.read_csv("ASIA_DATA.csv")
+scoring_method = K2Score(data=df)
+est = HillClimbSearch(data=df)
+estimated_model = est.estimate(scoring_method=scoring_method, max_indegree=4, max_iter=int(1e4))
+
+model = BayesianNetwork(estimated_model.edges)
+model.fit(df, estimator=BayesianEstimator, prior_type="BDeu") 
+inference4=ApproxInference_GibbsChoice(model)
+print(inference4.query_GibbsChoice(variables=["bronc"], diag='gelman'))
 
 
 

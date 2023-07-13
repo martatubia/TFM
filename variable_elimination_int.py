@@ -1,5 +1,3 @@
-# %%
-
 from pgmpy.inference import VariableElimination
 from pgmpy.models import BayesianNetwork
 import numpy as np
@@ -13,12 +11,9 @@ from pgmpy.global_vars import SHOW_PROGRESS
 import sys
 from pgmpy.factors import factor_product
 import itertools
-
 import networkx as nx
-import numpy as np
 from opt_einsum import contract
 from tqdm.auto import tqdm
-import pdf_Variable_elimination
 from pgmpy.inference.EliminationOrder import MinFill, MinNeighbors, MinWeight, WeightedMinFill
 from pgmpy.factors.discrete import TabularCPD
 
@@ -104,7 +99,7 @@ class VariableElimination_INT(VariableElimination):
         phis=[]
         
         for var in pbar:
-            print('Variable a eliminar', var)
+            print('Variable to eliminate', var)
             if show_progress and SHOW_PROGRESS:
                 #pbar.set_description(f"Eliminating: {var}")
             # Removing all the factors containing the variables which are
@@ -115,7 +110,7 @@ class VariableElimination_INT(VariableElimination):
                 if not set(factor.variables).intersection(eliminated_variables)
             ]
 
-            print('Factores que participan \n')
+            print('Factors involved \n')
             for i in factors:
                 print(i)
             phi = factor_product(*factors)
@@ -230,7 +225,7 @@ class VariableElimination_INT(VariableElimination):
             nx.draw_networkx_labels(nx_reduced_graph,pos=poss,font_size=7, font_weight="bold", alpha=1)
 
             # plt.title('Subtree for variable elimination')
-            ax.set_title("Reduced model for variable elimination (optimization)")
+            #ax.set_title("Reduced model for variable elimination (optimization)")
 
             plt.savefig('reduced.png',  dpi=600)    
                 
@@ -418,48 +413,13 @@ def generarPDF():
         print("La concatenación se ha completado. El archivo resultante se encuentra en:", output_file)
 
 
-alarm_model = BayesianNetwork(
-    [
-        ("Burglary", "Alarm"),
-        ("Earthquake", "Alarm"),
-        ("Alarm", "JohnCalls"),
-        ("Alarm", "MaryCalls"),
-    ]
-)
-
-# Defining the parameters using CPT
-
-
-cpd_burglary = TabularCPD(
-    variable="Burglary", variable_card=2, values=[[0.999], [0.001]]
-)
-cpd_earthquake = TabularCPD(
-    variable="Earthquake", variable_card=2, values=[[0.998], [0.002]]
-)
-cpd_alarm = TabularCPD(
-    variable="Alarm",
-    variable_card=2,
-    values=[[0.999, 0.71, 0.06, 0.05], [0.001, 0.29, 0.94, 0.95]],
-    evidence=["Burglary", "Earthquake"],
-    evidence_card=[2, 2],
-)
-cpd_johncalls = TabularCPD(
-    variable="JohnCalls",
-    variable_card=2,
-    values=[[0.95, 0.1], [0.05, 0.9]],
-    evidence=["Alarm"],
-    evidence_card=[2],
-)
-cpd_marycalls = TabularCPD(
-    variable="MaryCalls",
-    variable_card=2,
-    values=[[0.1, 0.7], [0.9, 0.3]],
-    evidence=["Alarm"],
-    evidence_card=[2],
-)
-evidence={'Earthquake':1}
-
-alarm_model.add_cpds(cpd_burglary, cpd_earthquake, cpd_alarm, cpd_johncalls, cpd_marycalls)
+from pgmpy.utils import get_example_model
+from pgmpy.sampling import BayesianModelSampling
+from pgmpy.estimators import MaximumLikelihoodEstimator
+alarm_model = get_example_model("asia")
+samples = BayesianModelSampling(alarm_model).forward_sample(size=int(1e5))
+model_struct = BayesianNetwork(ebunch=alarm_model.edges())
+model_struct.fit(data=samples, estimator=MaximumLikelihoodEstimator)
 
 
 
@@ -477,7 +437,7 @@ def query_with_logging(model, variables, evidence=None):
     archivo.close()
 
 
-query_with_logging(alarm_model,variables=['Burglary'], evidence={'MaryCalls':1})
+query_with_logging(model_struct,variables=["bronc"], evidence={"lung": "yes"})
 
 archivo1 = open("pasos_query.txt", 'r')
 archivo2 = open('variable_elimination2.txt', 'r')
